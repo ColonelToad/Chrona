@@ -1,0 +1,9 @@
+[package]
+name = "sensors"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+core-types = { path = "../core-types" }
+data-layer = { path = "../data-layer" }
+rand = "0.8"

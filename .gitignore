@@ -1,0 +1,27 @@
+# Rust
+/target
+**/target
+Cargo.lock
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+.env
+
+# Data / artifacts
+/data/
+*.onnx
+*.tflite
+*.gguf
+*.llamafile
+*.bin
+*.log
+*.sqlite
+*.db
+
+# Editors/OS
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
