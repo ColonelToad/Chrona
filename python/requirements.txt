@@ -1,2 +1,0 @@
-# Add training/inference dependencies here
-# Example: numpy==1.26.4
