@@ -9,13 +9,23 @@ __pycache__/
 .venv/
 .env
 
-# Data / artifacts
-/data/
-*.onnx
-*.tflite
+# Test & Temp Data (local dev only)
+/test/
+*.test.*
+test_data/
+
 *.gguf
 *.llamafile
 *.bin
+*.tflite
+*.onnx
+*.ckpt
+*.pth
+*.pt
+*.npz
+*.npy
+*.csv
+*.edf
 *.log
 *.sqlite
 *.db
@@ -25,3 +35,6 @@ __pycache__/
 Thumbs.db
 .idea/
 .vscode/
+
+# Personal notes (local only)
+/notes/
