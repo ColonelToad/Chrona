@@ -4,6 +4,7 @@
 pub mod query;
 pub mod sqlite;
 pub mod profile;
+pub mod parquet;
 pub use profile::*;
 
 // ...existing code...

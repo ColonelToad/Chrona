@@ -282,4 +282,157 @@ pub mod presets {
             .normalized(),
         }
     }
+    /// Create a CollegeStudent profile.
+    pub fn college_student() -> UserProfile {
+        UserProfile {
+            profile_type: ProfileType::CollegeStudent,
+            age: 21,
+            fitness_level: FitnessLevel::Moderate,
+            resting_hr: 62.0,
+            max_hr: 195.0,
+            hrv_baseline: 55.0,
+            baseline_temp: 36.4,
+            baseline_eda: 2.2,
+            typical_sleep_start_min: 1 * 60, // 1:00 AM
+            typical_sleep_duration_min: 6 * 60 + 30, // 6h 30m
+            activity_schedule: DailySchedule {
+                blocks: vec![
+                    ScheduleBlock { start_minute: 0, duration_min: 360, kind: ActivityKind::Sleep },
+                    ScheduleBlock { start_minute: 360, duration_min: 60, kind: ActivityKind::Sitting },
+                    ScheduleBlock { start_minute: 420, duration_min: 90, kind: ActivityKind::WalkingBrisk },
+                    ScheduleBlock { start_minute: 510, duration_min: 180, kind: ActivityKind::Sitting },
+                    ScheduleBlock { start_minute: 690, duration_min: 60, kind: ActivityKind::Standing },
+                    ScheduleBlock { start_minute: 750, duration_min: 120, kind: ActivityKind::WalkingSlow },
+                    ScheduleBlock { start_minute: 870, duration_min: 120, kind: ActivityKind::Sitting },
+                    ScheduleBlock { start_minute: 990, duration_min: 60, kind: ActivityKind::GymModerate },
+                    ScheduleBlock { start_minute: 1050, duration_min: 120, kind: ActivityKind::Sitting },
+                    ScheduleBlock { start_minute: 1170, duration_min: 90, kind: ActivityKind::WalkingBrisk },
+                    ScheduleBlock { start_minute: 1260, duration_min: 180, kind: ActivityKind::Sleep },
+                ],
+            },
+            stress_sensitivity: 0.5,
+            exercise_types: vec![ExerciseType::Running, ExerciseType::Gym, ExerciseType::BriskWalking],
+            exercise_frequency_per_week: 4,
+            exercise_intensity_pref: IntensityDistribution {
+                low: 0.2,
+                moderate: 0.6,
+                high: 0.2,
+            }.normalized(),
+        }
+    }
+
+    /// Create a ProAthlete profile.
+    pub fn pro_athlete() -> UserProfile {
+        UserProfile {
+            profile_type: ProfileType::ProAthlete,
+            age: 28,
+            fitness_level: FitnessLevel::VeryActive,
+            resting_hr: 48.0,
+            max_hr: 205.0,
+            hrv_baseline: 80.0,
+            baseline_temp: 36.0,
+            baseline_eda: 2.0,
+            typical_sleep_start_min: 23 * 60, // 23:00
+            typical_sleep_duration_min: 8 * 60, // 8h
+            activity_schedule: DailySchedule {
+                blocks: vec![
+                    ScheduleBlock { start_minute: 0, duration_min: 420, kind: ActivityKind::Sleep },
+                    ScheduleBlock { start_minute: 420, duration_min: 60, kind: ActivityKind::RunningModerate },
+                    ScheduleBlock { start_minute: 480, duration_min: 120, kind: ActivityKind::Sitting },
+                    ScheduleBlock { start_minute: 600, duration_min: 60, kind: ActivityKind::GymHigh },
+                    ScheduleBlock { start_minute: 660, duration_min: 120, kind: ActivityKind::Standing },
+                    ScheduleBlock { start_minute: 780, duration_min: 60, kind: ActivityKind::WalkingBrisk },
+                    ScheduleBlock { start_minute: 840, duration_min: 120, kind: ActivityKind::CyclingHard },
+                    ScheduleBlock { start_minute: 960, duration_min: 120, kind: ActivityKind::Sitting },
+                    ScheduleBlock { start_minute: 1080, duration_min: 60, kind: ActivityKind::RunningEasy },
+                    ScheduleBlock { start_minute: 1140, duration_min: 120, kind: ActivityKind::Standing },
+                    ScheduleBlock { start_minute: 1260, duration_min: 180, kind: ActivityKind::Sleep },
+                ],
+            },
+            stress_sensitivity: 0.2,
+            exercise_types: vec![ExerciseType::Running, ExerciseType::Cycling, ExerciseType::Gym],
+            exercise_frequency_per_week: 10,
+            exercise_intensity_pref: IntensityDistribution {
+                low: 0.1,
+                moderate: 0.3,
+                high: 0.6,
+            }.normalized(),
+        }
+    }
+
+    /// Create a ShiftWorker profile.
+    pub fn shift_worker() -> UserProfile {
+        UserProfile {
+            profile_type: ProfileType::ShiftWorker,
+            age: 40,
+            fitness_level: FitnessLevel::Moderate,
+            resting_hr: 70.0,
+            max_hr: 180.0,
+            hrv_baseline: 40.0,
+            baseline_temp: 36.3,
+            baseline_eda: 2.7,
+            typical_sleep_start_min: 4 * 60, // 4:00 AM
+            typical_sleep_duration_min: 6 * 60, // 6h
+            activity_schedule: DailySchedule {
+                blocks: vec![
+                    ScheduleBlock { start_minute: 0, duration_min: 240, kind: ActivityKind::Sitting },
+                    ScheduleBlock { start_minute: 240, duration_min: 360, kind: ActivityKind::Standing },
+                    ScheduleBlock { start_minute: 600, duration_min: 120, kind: ActivityKind::WalkingSlow },
+                    ScheduleBlock { start_minute: 720, duration_min: 120, kind: ActivityKind::Sitting },
+                    ScheduleBlock { start_minute: 840, duration_min: 120, kind: ActivityKind::Sleep },
+                    ScheduleBlock { start_minute: 960, duration_min: 120, kind: ActivityKind::Standing },
+                    ScheduleBlock { start_minute: 1080, duration_min: 120, kind: ActivityKind::WalkingBrisk },
+                    ScheduleBlock { start_minute: 1200, duration_min: 120, kind: ActivityKind::Sitting },
+                    ScheduleBlock { start_minute: 1320, duration_min: 120, kind: ActivityKind::Sleep },
+                ],
+            },
+            stress_sensitivity: 0.8,
+            exercise_types: vec![ExerciseType::BriskWalking, ExerciseType::Gym],
+            exercise_frequency_per_week: 2,
+            exercise_intensity_pref: IntensityDistribution {
+                low: 0.5,
+                moderate: 0.4,
+                high: 0.1,
+            }.normalized(),
+        }
+    }
+
+    /// Create a RemoteWorker profile.
+    pub fn remote_worker() -> UserProfile {
+        UserProfile {
+            profile_type: ProfileType::RemoteWorker,
+            age: 32,
+            fitness_level: FitnessLevel::Active,
+            resting_hr: 64.0,
+            max_hr: 190.0,
+            hrv_baseline: 50.0,
+            baseline_temp: 36.3,
+            baseline_eda: 2.3,
+            typical_sleep_start_min: 23 * 60 + 30, // 23:30
+            typical_sleep_duration_min: 7 * 60 + 30, // 7h 30m
+            activity_schedule: DailySchedule {
+                blocks: vec![
+                    ScheduleBlock { start_minute: 0, duration_min: 390, kind: ActivityKind::Sleep },
+                    ScheduleBlock { start_minute: 390, duration_min: 60, kind: ActivityKind::Standing },
+                    ScheduleBlock { start_minute: 450, duration_min: 120, kind: ActivityKind::Sitting },
+                    ScheduleBlock { start_minute: 570, duration_min: 60, kind: ActivityKind::WalkingBrisk },
+                    ScheduleBlock { start_minute: 630, duration_min: 180, kind: ActivityKind::Sitting },
+                    ScheduleBlock { start_minute: 810, duration_min: 60, kind: ActivityKind::Standing },
+                    ScheduleBlock { start_minute: 870, duration_min: 120, kind: ActivityKind::Sitting },
+                    ScheduleBlock { start_minute: 990, duration_min: 60, kind: ActivityKind::WalkingSlow },
+                    ScheduleBlock { start_minute: 1050, duration_min: 120, kind: ActivityKind::Sitting },
+                    ScheduleBlock { start_minute: 1170, duration_min: 90, kind: ActivityKind::WalkingBrisk },
+                    ScheduleBlock { start_minute: 1260, duration_min: 180, kind: ActivityKind::Sleep },
+                ],
+            },
+            stress_sensitivity: 0.4,
+            exercise_types: vec![ExerciseType::Running, ExerciseType::BriskWalking],
+            exercise_frequency_per_week: 5,
+            exercise_intensity_pref: IntensityDistribution {
+                low: 0.2,
+                moderate: 0.5,
+                high: 0.3,
+            }.normalized(),
+        }
+    }
 }

@@ -6,4 +6,6 @@ edition = "2021"
 [dependencies]
 anyhow = "1.0.100"
 core-types = { path = "../core-types" }
-rusqlite = "0.37.0"
+rusqlite = { version = "0.37.0", features = ["bundled"] }
+arrow = "57.0.0"
+parquet = "57.0.0"

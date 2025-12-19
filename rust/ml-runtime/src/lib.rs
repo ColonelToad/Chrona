@@ -1,6 +1,8 @@
+
+
 #![deny(missing_docs)]
 
-//! TinyML/ONNX/TFLite inference shims.
+//! TinyML/ONNX inference shims.
 
 use core_types::Sample;
 

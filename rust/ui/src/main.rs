@@ -7,6 +7,8 @@ use iced::{
     widget::{button, column, container, row, text, text_input},
     Application, Command, Element, Length, Settings, Subscription, Theme,
 };
+mod watch_face;
+use watch_face::{WatchFace, WatchFaceMessage};
 use std::time::Duration;
 
 mod display_mode;
@@ -41,6 +43,7 @@ enum Message {
     CloseDialog,
     Tick,
     QueryInputChanged(String),
+    WatchFace(WatchFaceMessage, core_types::Tier),
 }
 
 impl Application for ChronaApp {
@@ -103,12 +106,20 @@ impl Application for ChronaApp {
             Message::QueryInputChanged(value) => {
                 self.query_input = value;
             }
+            Message::WatchFace(WatchFaceMessage::ActivityClicked, tier) => {
+                // Switch to the model tab for the clicked tier
+                self.display_mode = match tier {
+                    core_types::Tier::Mini8 => DisplayMode::Mini,
+                    core_types::Tier::Standard16 => DisplayMode::Regular,
+                    core_types::Tier::Pro32 => DisplayMode::Pro,
+                };
+            }
         }
         Command::none()
     }
     
     fn subscription(&self) -> Subscription<Message> {
-        iced::time::every(Duration::from_secs(15)).map(|_| Message::Tick)
+        iced::time::every(Duration::from_secs(1)).map(|_| Message::Tick)
     }
 
     fn view(&self) -> Element<Self::Message> {
@@ -148,41 +159,41 @@ impl Application for ChronaApp {
 
         let tier_displays = match self.display_mode {
             DisplayMode::Mini => {
-                row![self.render_tier("Mini 8GB", &format!("{} • {}", mini_val, mini_activity), core_types::Tier::Mini8)]
+                row![self.render_watch_face(core_types::Tier::Mini8)]
                     .spacing(20)
                     .padding(20)
             }
             DisplayMode::Regular => {
-                row![self.render_tier("Regular 16GB", &regular_val, core_types::Tier::Standard16)]
+                row![self.render_watch_face(core_types::Tier::Standard16)]
                     .spacing(20)
                     .padding(20)
             }
             DisplayMode::Pro => {
-                row![self.render_tier("Pro 32GB", &pro_val, core_types::Tier::Pro32)]
+                row![self.render_watch_face(core_types::Tier::Pro32)]
                     .spacing(20)
                     .padding(20)
             }
             DisplayMode::MiniRegular => {
                 row![
-                    self.render_tier("Mini 8GB", &format!("{} • {}", mini_val, mini_activity), core_types::Tier::Mini8),
-                    self.render_tier("Regular 16GB", &regular_val, core_types::Tier::Standard16)
+                    self.render_watch_face(core_types::Tier::Mini8),
+                    self.render_watch_face(core_types::Tier::Standard16)
                 ]
                 .spacing(20)
                 .padding(20)
             }
             DisplayMode::RegularPro => {
                 row![
-                    self.render_tier("Regular 16GB", &regular_val, core_types::Tier::Standard16),
-                    self.render_tier("Pro 32GB", &pro_val, core_types::Tier::Pro32)
+                    self.render_watch_face(core_types::Tier::Standard16),
+                    self.render_watch_face(core_types::Tier::Pro32)
                 ]
                 .spacing(20)
                 .padding(20)
             }
             DisplayMode::Triple => {
                 row![
-                    self.render_tier("Mini 8GB", &mini_val, core_types::Tier::Mini8),
-                    self.render_tier("Regular 16GB", &regular_val, core_types::Tier::Standard16),
-                    self.render_tier("Pro 32GB", &pro_val, core_types::Tier::Pro32)
+                    self.render_watch_face(core_types::Tier::Mini8),
+                    self.render_watch_face(core_types::Tier::Standard16),
+                    self.render_watch_face(core_types::Tier::Pro32)
                 ]
                 .spacing(20)
                 .padding(20)
@@ -225,23 +236,9 @@ impl Application for ChronaApp {
 }
 
 impl ChronaApp {
-    fn render_tier(&self, title: &str, value: &str, tier: core_types::Tier) -> Element<Message> {
-        container(
-            column![
-                text(title).size(20),
-                text(value).size(36),
-                text("[chart placeholder]").size(12),
-                text("Status: Normal").size(12),
-                button(text("Ask AI")).on_press(Message::AskLlm(tier)),
-            ]
-            .spacing(15)
-            .padding(20)
-            .align_items(alignment::Alignment::Center),
-        )
-        .width(Length::Fill)
-        .height(Length::Fill)
-        .center_x()
-        .center_y()
-        .into()
+    fn render_watch_face(&self, tier: core_types::Tier) -> Element<Message> {
+        WatchFace { show_activity: true }
+            .view()
+            .map(move |msg| Message::WatchFace(msg, tier))
     }
 }

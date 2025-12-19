@@ -108,14 +108,34 @@ impl ActivityContext {
     }
 }
 
-/// Build a 128-token prompt for 8GB LLM (stateless responder).
-/// 
-/// Returns a tuple of (system_prompt, user_prompt) since Prompt uses borrowed strings.
-pub fn build_mini_prompt(activity_context: &ActivityContext, baseline_hr: u32) -> (String, String) {
-    let context = activity_context.to_llm_context(baseline_hr);
-    let user = format!("{}. Brief status check in one sentence.", context);
-    let system = "You are a health assistant. Provide a very concise status. Max one sentence.".to_string();
-    
-    (system, user)
+/// Build a prompt (system, user) for any tier.
+///
+/// For Mini tier, uses activity context; for others, uses user question.
+pub fn build_prompt_for_tier(
+    tier: Tier,
+    activity_context: Option<&ActivityContext>,
+    baseline_hr: u32,
+    user_question: &str,
+) -> (String, String) {
+    match tier {
+        Tier::Mini8 => {
+            let context = activity_context
+                .map(|ctx| ctx.to_llm_context(baseline_hr))
+                .unwrap_or_else(|| "Activity context unavailable.".to_string());
+            let user = format!("{}. Brief status check in one sentence.", context);
+            let system = "You are a health assistant. Provide a concise answer. Respond with a direct recommendation. Do not use lists or multiple-choice format. Max five sentences.".to_string();
+            (system, user)
+        }
+        Tier::Standard16 => {
+            let system = "You are a health assistant. You have access to the user's recent health data from the past few weeks. Provide a detailed, actionable answer using recent trends and context. Include possible causes, recommended steps, and when to seek medical attention. Use up to ten sentences if needed.".to_string();
+            let user = user_question.to_string();
+            (system, user)
+        }
+        Tier::Pro32 => {
+            let system = "You are a health assistant. You have access to the user's health data and trends over multiple months. Provide a comprehensive, nuanced answer using long-term analysis, patterns, and context. Include possible causes, recommended steps, and when to seek medical attention. Use as many sentences as needed for a complete response.".to_string();
+            let user = user_question.to_string();
+            (system, user)
+        }
+    }
 }
 

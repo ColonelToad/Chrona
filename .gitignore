@@ -29,6 +29,8 @@ test_data/
 *.log
 *.sqlite
 *.db
+*.parquet
+*.ps1
 
 # Editors/OS
 .DS_Store
@@ -36,5 +38,5 @@ Thumbs.db
 .idea/
 .vscode/
 
-# Personal notes (local only)
+# Personal notes
 /notes/

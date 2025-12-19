@@ -4,7 +4,7 @@ use core_types::Tier;
 // use data_layer::{NoopStore, TimeSeriesStore};
 use llm_runtime::{LlmEngine, NoopLlm, Prompt, RealLlm};
 use ml_runtime::{Model, NoopModel};
-use logic::{ActivityContext, build_mini_prompt};
+use logic::ActivityContext;
 use std::fs;
 use sensors::Sensor;
 use sensors::SyntheticHeartRate;
@@ -37,6 +37,9 @@ impl TierEngine {
             Tier::Standard16 => 72.0,
             Tier::Pro32 => 74.0,
         };
+
+        // Model selection by tier (temporarily disabled: always use NoopModel)
+        let model: Box<dyn Model> = Box::new(NoopModel);
 
         // Try to load real model for this tier, fall back to noop
         let llm: Box<dyn LlmEngine> = match tier {
@@ -105,8 +108,7 @@ impl TierEngine {
         Self {
             tier,
             sensor: Box::new(SyntheticHeartRate::new(baseline, 5.0, start_ts)),
-            // store: Box::new(NoopStore),
-            model: Box::new(NoopModel),
+            model,
             llm,
             last_value: None,
             activity_context: None,
@@ -133,7 +135,7 @@ impl TierEngine {
                 //         // self.activity_context = Some(ctx);
                 //     }
                 // }
-            // ...existing code...
+            // }
         }
     }
 
@@ -146,19 +148,17 @@ impl TierEngine {
 
     /// Ask LLM a question with tier context.
     pub fn ask_llm(&self, question: &str) -> String {
-        // For Mini tier, include activity + HR context in prompt
-        let response = if let (Tier::Mini8, Some(ctx)) = (self.tier, self.activity_context.clone()) {
-            let (system, user) = build_mini_prompt(&ctx, self.baseline_hr);
-            let prompt = Prompt { tier: self.tier, user: &user, system: &system };
-            self.llm.run(prompt)
-        } else {
-            let prompt = Prompt {
-                tier: self.tier,
-                user: question,
-                system: "You are a health assistant. Keep answers brief.",
-            };
-            self.llm.run(prompt)
+        let (system, user) = logic::build_prompt_for_tier(
+            self.tier,
+            self.activity_context.as_ref(),
+            self.baseline_hr,
+            question,
+        );
+        let prompt = Prompt {
+            tier: self.tier,
+            user: &user,
+            system: &system,
         };
-        response.text
+        self.llm.run(prompt).text
     }
 }
