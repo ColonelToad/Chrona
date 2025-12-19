@@ -4,6 +4,7 @@ version = "0.1.0"
 edition = "2021"
 
 [dependencies]
+anyhow = "1.0.100"
 core-types = { path = "../core-types" }
-data-layer = { path = "../data-layer" }
 rand = "0.8"
+rusqlite = "0.37.0"

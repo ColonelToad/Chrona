@@ -1,18 +1,19 @@
 //! Tier-specific engine instances for UI state.
 
 use core_types::Tier;
-use data_layer::{NoopStore, TimeSeriesStore};
+// use data_layer::{NoopStore, TimeSeriesStore};
 use llm_runtime::{LlmEngine, NoopLlm, Prompt, RealLlm};
-use ml_runtime::{ActivityClassifier, Model, NoopModel};
+use ml_runtime::{Model, NoopModel};
 use logic::{ActivityContext, build_mini_prompt};
 use std::fs;
-use sensors::{MhealthStreamingSensor, Sensor, SyntheticHeartRate};
+use sensors::Sensor;
+use sensors::SyntheticHeartRate;
 
 /// Wrapper holding all runtime components for one tier.
 pub struct TierEngine {
     pub tier: Tier,
     pub sensor: Box<dyn Sensor>,
-    pub store: Box<dyn TimeSeriesStore>,
+    // pub store: Box<dyn TimeSeriesStore>,
     pub model: Box<dyn Model>,
     pub llm: Box<dyn LlmEngine>,
     pub last_value: Option<f32>,
@@ -20,7 +21,7 @@ pub struct TierEngine {
     pub activity_context: Option<ActivityContext>,
     pub baseline_hr: u32,
     // For Mini tier: keep reference to streaming sensor for activity window
-    mhealth_sensor: Option<MhealthStreamingSensor>,
+    // mhealth_sensor: Option<MhealthStreamingSensor>,
 }
 
 impl TierEngine {
@@ -82,57 +83,57 @@ impl TierEngine {
         };
         
         // Load MHEALTH sensor for Mini tier
-        let (sensor, mhealth_sensor_copy): (Box<dyn Sensor>, Option<MhealthStreamingSensor>) = match tier {
-            Tier::Mini8 => {
-                let possible_paths = vec![
-                    "C:\\Users\\legot\\Chrona\\data\\mini\\mhealth_raw_data.csv",
-                    "data\\mini\\mhealth_raw_data.csv",
-                    "..\\..\\data\\mini\\mhealth_raw_data.csv",
-                ];
-                if let Some(content) = possible_paths.iter().find_map(|p| fs::read_to_string(p).ok()) {
-                    let mhealth = MhealthStreamingSensor::from_csv(&content);
-                    // Clone for window access
-                    let mhealth_copy = MhealthStreamingSensor::from_csv(&content);
-                    (Box::new(mhealth), Some(mhealth_copy))
-                } else {
-                    (Box::new(SyntheticHeartRate::new(baseline, 5.0, start_ts)), None)
-                }
-            }
-            _ => (Box::new(SyntheticHeartRate::new(baseline, 5.0, start_ts)), None),
-        };
+        // let (sensor, mhealth_sensor_copy): (Box<dyn Sensor>, Option<MhealthStreamingSensor>) = match tier {
+        //     Tier::Mini8 => {
+        //         let possible_paths = vec![
+        //             "C:\\Users\\legot\\Chrona\\data\\mini\\mhealth_raw_data.csv",
+        //             "data\\mini\\mhealth_raw_data.csv",
+        //             "..\\..\\data\\mini\\mhealth_raw_data.csv",
+        //         ];
+        //         if let Some(content) = possible_paths.iter().find_map(|p| fs::read_to_string(p).ok()) {
+        //             let mhealth = MhealthStreamingSensor::from_csv(&content);
+        //             // Clone for window access
+        //             let mhealth_copy = MhealthStreamingSensor::from_csv(&content);
+        //             (Box::new(mhealth), Some(mhealth_copy))
+        //         } else {
+        //             (Box::new(SyntheticHeartRate::new(baseline, 5.0, start_ts)), None)
+        //         }
+        //     }
+        //     _ => (Box::new(SyntheticHeartRate::new(baseline, 5.0, start_ts)), None),
+        // };
 
         Self {
             tier,
-            sensor,
-            store: Box::new(NoopStore),
+            sensor: Box::new(SyntheticHeartRate::new(baseline, 5.0, start_ts)),
+            // store: Box::new(NoopStore),
             model: Box::new(NoopModel),
             llm,
             last_value: None,
             activity_context: None,
             baseline_hr: baseline as u32,
-            mhealth_sensor: mhealth_sensor_copy,
+            // mhealth_sensor: mhealth_sensor_copy,
         }
     }
 
     /// Poll sensor and update state.
     pub fn poll(&mut self) {
         if let Some(sample) = self.sensor.poll() {
-            self.store.write(self.sensor.name(), sample.clone());
+            // self.store.write(self.sensor.name(), sample.clone());
             self.last_value = Some(sample.value);
         }
 
         // Update activity from MHEALTH sensor (Mini tier only)
         if matches!(self.tier, Tier::Mini8) {
-            if let Some(ref mhealth) = self.mhealth_sensor {
-                let window = mhealth.get_window();
-                if !window.is_empty() {
-                    let (_label, _conf) = ActivityClassifier::classify(&window);
-                    if let Some(first) = window.first() {
-                        let ctx = ActivityContext::from_record(first, self.baseline_hr);
-                        self.activity_context = Some(ctx);
-                    }
-                }
-            }
+            // if let Some(ref mhealth) = self.mhealth_sensor {
+                // let window = mhealth.get_window();
+                // if !window.is_empty() {
+                //     // let (_label, _conf) = ActivityClassifier::classify(&window);
+                //     if let Some(first) = window.first() {
+                //         // let ctx = ActivityContext::from_record(first, self.baseline_hr);
+                //         // self.activity_context = Some(ctx);
+                //     }
+                // }
+            // ...existing code...
         }
     }
 

@@ -3,9 +3,9 @@
 //! Orchestration logic tying sensors, storage, ML, and LLMs together.
 
 use core_types::Tier;
-use data_layer::{MhealthRecord, TimeSeriesStore};
+// use data_layer::{MhealthRecord, TimeSeriesStore};
 use llm_runtime::{LlmEngine, Prompt, Response};
-use ml_runtime::{ActivityClassifier, Model};
+use ml_runtime::Model;
 use sensors::Sensor;
 
 
@@ -13,7 +13,7 @@ use sensors::Sensor;
 pub struct Engine<S, T, M, L>
 where
     S: Sensor,
-    T: TimeSeriesStore,
+    // T: TimeSeriesStore,
     M: Model,
     L: LlmEngine,
 {
@@ -32,14 +32,14 @@ where
 impl<S, T, M, L> Engine<S, T, M, L>
 where
     S: Sensor,
-    T: TimeSeriesStore,
+    // T: TimeSeriesStore,
     M: Model,
     L: LlmEngine,
 {
     /// Poll sensor, store data, run model, and send a lightweight prompt.
     pub fn step(&mut self) -> Response {
         if let Some(sample) = self.sensor.poll() {
-            self.store.write(self.sensor.name(), sample.clone());
+            // self.store.write(self.sensor.name(), sample.clone());
             let _score = self.model.infer(&[sample.clone()]);
             let prompt = Prompt {
                 tier: self.tier,
@@ -70,23 +70,24 @@ pub struct ActivityContext {
 
 impl ActivityContext {
     /// Create context from MHEALTH record and resting HR.
-    pub fn from_record(record: &MhealthRecord, resting_hr: u32) -> Self {
-        let (activity, confidence) = ActivityClassifier::classify(&[record.clone()]);
-        let intensity = record.intensity();
-        
-        // Predict HR: resting + (max_hr - resting) * intensity
-        // Assume max HR ~= 180 for typical person
-        let max_hr = 180;
-        let predicted_hr = (resting_hr as f32 + (max_hr - resting_hr) as f32 * intensity) as u32;
-
-        ActivityContext {
-            activity,
-            activity_name: record.activity_name().to_string(),
-            confidence,
-            predicted_hr,
-            intensity,
-        }
-    }
+        // /// Create context from MHEALTH record and resting HR.
+        // pub fn from_record(record: &MhealthRecord, resting_hr: u32) -> Self {
+        //     let (activity, confidence) = ActivityClassifier::classify(&[record.clone()]);
+        //     let intensity = record.intensity();
+        //     
+        //     // Predict HR: resting + (max_hr - resting) * intensity
+        //     // Assume max HR ~= 180 for typical person
+        //     let max_hr = 180;
+        //     let predicted_hr = (resting_hr as f32 + (max_hr - resting_hr) as f32 * intensity) as u32;
+        //
+        //     ActivityContext {
+        //         activity,
+        //         activity_name: record.activity_name().to_string(),
+        //         confidence,
+        //         predicted_hr,
+        //         intensity,
+        //     }
+        // }
 
     /// Generate LLM prompt for 8GB tier.
     /// Returns a context string for the LLM about current activity and HR.

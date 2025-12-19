@@ -7,5 +7,5 @@ members = [
     "ml-runtime",
     "llm-runtime",
     "logic",
-    "ui",
+    "ui", "chrona-ingest",
 ]

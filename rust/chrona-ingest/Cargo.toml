@@ -1,0 +1,11 @@
+[package]
+name = "chrona-ingest"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+anyhow = "1.0.100"
+core-types = { version = "0.1.0", path = "../core-types" }
+data-layer = { version = "0.1.0", path = "../data-layer" }
+rand = "0.9.2"
+rusqlite = { version = "0.37.0", features = ["bundled"] }
